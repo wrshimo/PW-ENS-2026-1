@@ -1,0 +1,55 @@
+p {
+    color: blue;
+}
+
+.destaque {
+    background-color: yellow;
+    border-radius: 5px;
+}
+
+.texto {
+    color: green;
+}
+
+#cabecalho {
+    font-size: 24px;
+}
+
+#principal {
+    color: red;
+    font-size: 20px;
+}
+
+
+.card {
+    width: 300px;
+    padding: 20px;
+    margin: 20px auto;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.card h2 {
+    color: #1e3a8a;
+    font-size: 24px;
+    margin: 0 0 10px 0;
+}
+
+.card p {
+    color: #4b5563;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 15px 0;
+}
+
+.btn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
