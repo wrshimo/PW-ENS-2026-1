@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortOrder = document.getElementById('sort-order');
     const filterBtn = document.getElementById('filter-btn');
     const productList = document.getElementById('product-list');
+    const promoTitle = document.getElementById('promo-title');
+    const promoDesc = document.getElementById('promo-desc');
+    const fakeCountInput = document.getElementById('fake-count');
+    const generateFakeBtn = document.getElementById('generate-fake-btn');
+    const loadRealBtn = document.getElementById('load-real-btn');
     const categoryFilters = document.querySelectorAll('.category-filter');
     const contactForm = document.getElementById('contact-form');
     const clearCartBtn = document.getElementById('clear-cart-btn');
@@ -29,15 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmModal = new bootstrap.Modal(document.getElementById('confirm-clear-cart-modal'));
     const tooltip = new bootstrap.Tooltip(clearCartBtn);
 
-
     // --- FUNÇÕES DO CARRINHO ---
-    // Salva o estado atual do carrinho (quantidade e total) no Local Storage.
     function saveCart() {
         localStorage.setItem('cartCount', cartCount);
         localStorage.setItem('cartTotal', cartTotal);
     }
 
-    // Atualiza a exibição do carrinho na interface do usuário.
     function updateCartDisplay() {
         cartCountElement.textContent = cartCount;
         const formattedTotal = cartTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -48,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearCartBtn.disabled = cartCount === 0;
     }
 
-    // Limpa o carrinho, redefinindo a contagem e o total.
     function clearCart() {
         cartCount = 0;
         cartTotal = 0;
@@ -57,11 +58,59 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmModal.hide(); // Esconde o modal de confirmação.
     }
 
-    // --- RENDERIZAÇÃO DE PRODUTOS E EVENTOS ---
+    // --- PROMOÇÃO DO DIA (estruturas condicionais) ---
+    function getPromotionOfDay(date = new Date()) {
+        const weekday = date.getDay(); // 0=Dom, 1=Seg, ... 6=Sáb
+
+        switch (weekday) {
+            case 0:
+                return { title: 'Domingo de Frete Grátis', desc: 'Frete grátis acima de R$ 199 (cupom: DOM199).' };
+            case 1:
+                return { title: 'Segunda Tech', desc: 'Até 10% OFF em Eletrônicos (cupom: TECH10).' };
+            case 2:
+                return { title: 'Terça da Leitura', desc: 'Leve 3 livros e pague 2 (selecionados).' };
+            case 3:
+                return { title: 'Quarta da Casa', desc: 'Até 15% OFF em Casa & Jardim (cupom: CASA15).' };
+            case 4:
+                return { title: 'Quinta do Look', desc: 'Roupas com 2ª peça com 30% OFF.' };
+            case 5:
+                return { title: 'Sextou!', desc: 'Cashback de 5% em todo o site (crédito na loja).' };
+            case 6:
+                return { title: 'Sábado Relâmpago', desc: 'Oferta surpresa a cada 2 horas. Fique de olho!' };
+            default:
+                return { title: 'Promoção do Dia', desc: 'Confira as ofertas na vitrine.' };
+        }
+    }
+
+    function renderPromotion() {
+        const promo = getPromotionOfDay();
+        if (promoTitle && promoDesc) {
+            promoTitle.textContent = promo.title;
+            promoDesc.textContent = promo.desc;
+        }
+    }
+
+    // --- LAB: GERAR PRODUTOS FICTÍCIOS (laços) ---
+    function generateFakeProducts(n) {
+        const safeN = n > 0 ? n : 1; // operador ternário
+        const fakeProducts = [];
+
+        for (let i = 1; i <= safeN; i++) {
+            fakeProducts.push({
+                imagem: `https://placehold.co/400x400?text=Produto+${i}`,
+                nome: `Produto Fictício ${i}`,
+                preco: `R$ ${(Math.random() * 900 + 50).toFixed(2)}`.replace('.', ','),
+                categoria: i % 2 === 0 ? 'Eletrônicos' : 'Roupas' // ternário + resto
+            });
+        }
+
+        return fakeProducts;
+    }
+
     // Renderiza os cartões de produtos na página.
     function renderCards(products) {
-        productList.innerHTML = ''; // Limpa a lista de produtos existente.
-        products.forEach(product => {
+        productList.innerHTML = '';
+        for (const product of products) { // for...of
             const card = `
                 <div class="col">
                     <div class="card h-100 shadow-sm">
@@ -77,14 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-            productList.innerHTML += card; // Adiciona o novo cartão de produto à lista.
-        });
-        attachProductEventListeners(); // Adiciona os ouvintes de eventos aos novos botões.
+            productList.innerHTML += card;
+        }
+        attachProductEventListeners();
     }
 
-    // Adiciona ouvintes de eventos de clique aos botões "Comprar".
     function attachProductEventListeners() {
-        document.querySelectorAll('#product-list .btn-success').forEach(btn => {
+        for (const btn of document.querySelectorAll('#product-list .btn-success')) {
             btn.addEventListener('click', (event) => {
                 event.stopPropagation();
                 const card = btn.closest('.card');
@@ -98,26 +146,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     updateCartDisplay();
                 }
             });
-        });
+        }
     }
 
     // --- LÓGICA DE FILTRAGEM E ORDENAÇÃO ---
-    // Aplica os filtros e a ordenação selecionados à lista de produtos.
     function applyFilters() {
         let filteredProducts = [...allProducts];
 
-        // Filtro por categoria
         if (selectedCategory !== 'all') {
             filteredProducts = filteredProducts.filter(product => product.categoria === selectedCategory);
         }
 
-        // Filtro por nome
         const searchTerm = nameSearch.value.toLowerCase();
         if (searchTerm) {
             filteredProducts = filteredProducts.filter(product => product.nome.toLowerCase().includes(searchTerm));
         }
 
-        // Filtro por preço
         const maxPrice = parseFloat(priceFilter.value);
         if (!isNaN(maxPrice)) {
             filteredProducts = filteredProducts.filter(product => {
@@ -126,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Ordenação
         const sortValue = sortOrder.value;
         if (sortValue !== 'default') {
             filteredProducts.sort((a, b) => {
@@ -136,24 +179,46 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        renderCards(filteredProducts); // Renderiza os produtos filtrados e ordenados.
+        renderCards(filteredProducts);
     }
 
     // --- CARGA INICIAL DE DADOS E CONFIGURAÇÃO DE EVENTOS ---
-    // Busca os dados dos produtos do arquivo JSON.
-    fetch('produtos.json')
-        .then(response => response.json())
-        .then(data => {
-            allProducts = data; // Armazena todos os produtos na variável de estado.
-            applyFilters(); // Renderiza os produtos na página pela primeira vez.
-        });
+    function loadProductsFromJson() {
+        return fetch('produtos.json')
+            .then(response => response.json())
+            .then(data => {
+                allProducts = data;
+                applyFilters();
+            });
+    }
 
-    // Adiciona ouvintes de eventos aos elementos de filtro e ordenação.
+    loadProductsFromJson();
+
+    // Botões do laboratório
+    if (generateFakeBtn && fakeCountInput) {
+        generateFakeBtn.addEventListener('click', () => {
+            const n = parseInt(fakeCountInput.value);
+            const fakeProducts = generateFakeProducts(isNaN(n) ? 1 : n);
+            allProducts = fakeProducts;
+            selectedCategory = 'all';
+            applyFilters();
+        });
+    }
+
+    if (loadRealBtn) {
+        loadRealBtn.addEventListener('click', () => {
+            loadProductsFromJson();
+        });
+    }
+
+    // Promoção do dia
+    renderPromotion();
+
+    // Eventos de filtro
     nameSearch.addEventListener('input', applyFilters);
     filterBtn.addEventListener('click', applyFilters);
     sortOrder.addEventListener('change', applyFilters);
 
-    // Adiciona ouvintes de eventos aos links de filtro de categoria.
     categoryFilters.forEach(filter => {
         filter.addEventListener('click', (e) => {
             e.preventDefault();
@@ -162,12 +227,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Adiciona ouvinte de evento para mostrar o modal de confirmação ao clicar em "Limpar Carrinho".
     clearCartBtn.addEventListener('click', () => {
         confirmModal.show();
     });
 
-    // Adiciona ouvinte de evento para limpar o carrinho ao confirmar no modal.
     confirmClearBtn.addEventListener('click', clearCart);
 
     // --- VALIDAÇÃO DO FORMULÁRIO DE CONTATO ---
@@ -198,50 +261,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- EXIBIÇÃO INICIAL DO CARRINHO ---
-    // Atualiza a exibição do carrinho assim que a página é carregada.
     updateCartDisplay();
-
-    // --- PROMOÇÂO DO DIA ---
-    function getPromotionOfDay() {
-        const date = new Date();
-        const dayOfWeek = date.getDay();
-
-        switch (dayOfWeek) {
-            case 1: //Segunda-Feira
-                return { title: 'Segunda Tech', desc: '10% OFF' };
-            case 2: //Terça-Feira
-                return { title: 'Terça Leitura', desc: 'Leve 3 pague 2' };
-            case 4: //Quinta-Feira
-                return { title: 'Quinta do Look 👔👖', desc: 'Roupas com 2ª peça com 30% OFF' };
-            default:
-                document.getElementById('promo-box').style.display = 'none';
-                return { title: 'Promoção do Dia', desc: 'Sem promoção😿' };
-        }
-    }
-
-    const promo = getPromotionOfDay();
-    document.getElementById('promo-title').textContent = promo.title;
-    document.getElementById('promo-desc').textContent = promo.desc;
-
-    // ---- GERAÇÃO ALEATÓRIA DE PRODUTOS ---
-    function generateFakeProducts(n) {
-        const produtos = [];
-        for (let i = 1; i <= n; i++) {
-            produtos.push({
-                nome: `Produto ${i}`,
-                preco: `R$ ${(Math.random() * 100).toFixed(2)}`,
-                imagem: `https://placehold.co/400x400?text=${i}`,
-                categoria: i % 2 === 0 ? 'Eletrônicos' : 'Roupas'
-            });
-        }
-        return produtos;
-    }
-
-    document.getElementById('generate-fake-btn')
-        .addEventListener('click', () => {
-            const n = document.getElementById('fake-count').value;
-            allProducts = generateFakeProducts(n);
-            renderCards(allProducts);
-        });
 });
