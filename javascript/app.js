@@ -129,7 +129,24 @@ document.addEventListener('DOMContentLoaded', () => {
             productList.innerHTML += card;
         }
         attachProductEventListeners();
+
+        selectCard(); // Permite selecionar os produtos
     }
+
+    // --- SELECIONAR PRODUTO ---
+    function selectCard() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Limpa anteriores
+                cards.forEach(c => c.classList.remove('selected'));
+
+                // Aplica no atual
+                card.classList.add('selected');
+            });
+        });
+    }
+
 
     function attachProductEventListeners() {
         for (const btn of document.querySelectorAll('#product-list .btn-success')) {
