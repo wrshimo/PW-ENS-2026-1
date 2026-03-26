@@ -29,7 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // =====================================================
   const popover = new bootstrap.Popover(cartIcon, {
     html: true,
-    trigger: 'hover focus',
+    // IMPORTANTE: o Popover do Bootstrap sanitiza HTML por padrão.
+    // Isso pode remover <button> e impedir o "remover item" de aparecer.
+    sanitize: false,
+    // Usar clique facilita interação dentro do popover (botões)
+    trigger: 'click',
     placement: 'bottom',
     title: 'Resumo do Carrinho',
     content: 'Seu carrinho está vazio.'
@@ -136,12 +140,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const itemsHtml = cart.items
       .map(
         (item) => `
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div style="max-width:220px">
-              <div class="fw-semibold" style="font-size:0.9rem">${item.nome}</div>
+          <div class="d-flex justify-content-between align-items-start gap-2 mb-2 cart-popover-item">
+            <div class="cart-popover-item__info">
+              <div class="fw-semibold cart-popover-item__name">${item.nome}</div>
               <div class="text-muted" style="font-size:0.8rem">${item.qty} × ${formatPriceBRL(item.preco)}</div>
             </div>
-            <button class="btn btn-sm btn-outline-danger remove-item" data-id="${item.id}">
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger cart-popover-item__remove remove-item"
+              data-id="${item.id}"
+              aria-label="Remover 1 unidade"
+              title="Remover 1"
+            >
               <i class="bi bi-dash"></i>
             </button>
           </div>
@@ -150,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .join('');
 
     return `
-      <div style="min-width:300px">
+      <div class="cart-popover">
         ${itemsHtml}
         <hr class="my-2" />
         <div class="d-flex justify-content-between">

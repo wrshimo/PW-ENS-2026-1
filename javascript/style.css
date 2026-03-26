@@ -13,3 +13,9 @@
 .card .btn-outline-primary{color:var(--azul-escuro); border-color:var(--azul-escuro);} 
 .card .btn-outline-primary:hover{background:var(--azul-escuro); border-color:var(--azul-escuro);} 
 
+/* ===== Carrinho (Popover) ===== */
+.popover{max-width: 380px;}
+.cart-popover{min-width: 280px; max-width: 360px;}
+.cart-popover-item__info{min-width:0; flex:1;}
+.cart-popover-item__name{font-size:0.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.cart-popover-item__remove{flex:0 0 auto;}
