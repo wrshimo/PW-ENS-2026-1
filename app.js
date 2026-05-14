@@ -276,16 +276,17 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFilters();
   }
   
-  /**
-   * Carrega os produtos do arquivo produtos.json.
-   */
-  function loadFromJson() {
-    fetch('produtos.json') // Caminho corrigido para a raiz
-      .then((response) => response.json())
-      .then(processAndRenderProducts) // Reutiliza a função de processamento
+  function loadFromApi() {
+    fetch('/api/produtos.php')
+      .then((r) => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(processAndRenderProducts)
       .catch((err) => {
-        console.error('Falha ao carregar produtos.json', err);
-        productList.innerHTML = `<div class="alert alert-danger">Erro ao carregar os produtos. Tente novamente.</div>`;
+        console.warn('API indisponível', err);
+        // Exibir fallback de erro ou carregar JSON estático
+        //productList.innerHTML = `<div class="alert alert-danger">Erro ao carregar os produtos. Tente novamente.</div>`;
       });
   }
 
@@ -433,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('load-from-json-btn').addEventListener('click', () => {
-    loadFromJson();
+    loadFromApi();
   });
 
   // =====================================================
@@ -446,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof produtosDoBanco !== 'undefined' && Array.isArray(produtosDoBanco) && produtosDoBanco.length > 0) {
     processAndRenderProducts(produtosDoBanco);
   } else {
-    loadFromJson();
+    loadFromApi();
   }
 
   updateCartDisplay();

@@ -585,6 +585,13 @@ render_nav('home');
     </div>
   </section>
 
+  <section id="lab-box" class="mb-4 p-3 border rounded bg-light">
+    <label>Quantidade:</label>
+    <input type="number" id="fake-count" value="12">
+    <button id="generate-fake-btn" class="btn btn-primary">Gerar Cards</button>
+    <button id="load-from-json-btn" class="btn btn-success">Recarregar do JSON</button>
+  </section>
+
   <div class="row">
     <main class="col-md-12">
       <form id="filter-form" class="mb-4 p-3 border rounded bg-light" onsubmit="return false;">
@@ -607,7 +614,8 @@ render_nav('home');
         </div>
       </form>
 
-      <section id="product-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5 g-4">
+      <section id="product-list"
+        class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5 g-4">
         <!-- Os produtos serão inseridos aqui via JavaScript -->
       </section>
 
@@ -615,6 +623,30 @@ render_nav('home');
   </div>
 </div>
 
+<!-- Modal de Confirmação (carrinho) -->
+<div class="modal fade" id="confirm-clear-cart-modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Limpar Carrinho</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Tem certeza de que deseja limpar o carrinho?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirm-clear-btn">Limpar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // A partir de agora, o front-end busca produtos via HTTP (API REST)
+  // A variável foi mantida só para não quebrar o app.js (e para evidenciar a separação)
+  const produtosDoBanco = [];
+</script>
 <script src="/app.js"></script>
 
 <?php
