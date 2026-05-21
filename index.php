@@ -17,7 +17,7 @@ render_nav('home');
     <label>Quantidade:</label>
     <input type="number" id="fake-count" value="12">
     <button id="generate-fake-btn" class="btn btn-primary">Gerar Cards</button>
-    <button id="load-from-json-btn" class="btn btn-success">Recarregar do JSON</button>
+    <button id="load-from-api-btn" class="btn btn-success">Recarregar Produtos</button>
   </section>
 
   <div class="row">

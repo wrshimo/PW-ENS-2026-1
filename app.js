@@ -433,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
     processAndRenderProducts(fake);
   });
 
-  document.getElementById('load-from-json-btn').addEventListener('click', () => {
+  document.getElementById('load-from-api-btn').addEventListener('click', () => {
     loadFromApi();
   });
 
