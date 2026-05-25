@@ -1,4 +1,16 @@
 <?php
+session_start();
+$metodo = $_SERVER['REQUEST_METHOD'];
+
+// Protege métodos de alteração
+if (in_array($metodo, ['POST', 'PUT', 'DELETE'])) {
+    if (!isset($_SESSION['logado'])) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Autenticação necessária']);
+        exit;
+    }
+}
+
 require_once __DIR__ . '/../conexao.php';
 require_once __DIR__ . '/../includes/http_json.php';
 

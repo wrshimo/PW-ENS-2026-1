@@ -15,7 +15,28 @@ function render_head(string $title): void {
 <?php
 }
 
+function render_flash_messages(): void {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+?>
+    <!-- BLOCO DE MENSAGENS FLASH -->
+    <div class="container mt-3">
+    <?php if (isset($_SESSION['flash'])): 
+        $f = $_SESSION['flash']; ?>
+        <div class="alert alert-<?= $f['tipo'] ?> alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($f['msg']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php unset($_SESSION['flash']); endif; ?>
+    </div>
+<?php
+}
+
 function render_nav(string $active = 'home'): void {
+  if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+  }
   $isHome = $active === 'home' ? 'active' : '';
   $isAdmin = $active === 'admin' ? 'active' : '';
 ?>
@@ -46,7 +67,23 @@ function render_nav(string $active = 'home'): void {
           </li>
 
           <li class="nav-item"><a class="nav-link" href="/contato">Contato</a></li>
-          <li class="nav-item"><a class="nav-link <?= $isAdmin ?>" href="/admin/">Admin</a></li>
+          
+          <!-- Menu Admin / Login -->
+          <?php if (isset($_SESSION['logado']) && $_SESSION['logado'] === true): ?>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle <?= $isAdmin ?>" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Admin
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                <li><a class="dropdown-item" href="/admin/">Produtos</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/admin/logout.php">Logout</a></li>
+              </ul>
+            </li>
+          <?php else: ?>
+            <li class="nav-item"><a class="nav-link <?= $isAdmin ?>" href="/admin/login.php">Login</a></li>
+          <?php endif; ?>
+
         </ul>
 
         <form class="d-flex" role="search" onsubmit="return false;">
@@ -65,6 +102,9 @@ function render_nav(string $active = 'home'): void {
       </div>
     </div>
   </nav>
+
+  <?php render_flash_messages(); ?>
+
 </header>
 <?php
 }

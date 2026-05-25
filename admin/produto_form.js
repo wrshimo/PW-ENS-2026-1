@@ -77,7 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
       } catch (err) {
         console.error(err);
-        showAlert('danger', 'Falha ao salvar. Verifique os campos e tente novamente.');
+        //showAlert('danger', 'Falha ao salvar. Verifique os campos e tente novamente.');
+        showAlert('danger', err.message);
       }
     });
   });
