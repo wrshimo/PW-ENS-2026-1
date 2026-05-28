@@ -102,7 +102,7 @@ render_nav('home');
   // A variável foi mantida só para não quebrar o app.js (e para evidenciar a separação)
   const produtosDoBanco = [];
 </script>
-<script src="/app-min.js"></script>
+<script src="/app.min.js"></script>
 
 <?php
 render_footer();
