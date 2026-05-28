@@ -16,6 +16,43 @@ if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
 }
 
 try {
+    // GET: Retorna a lista de todos os pedidos e seus itens
+    if ($method === 'GET') {
+        // 1. Consulta para obter todos os pedidos com detalhes do cliente
+        $stmtPedidos = $pdo->query('
+            SELECT 
+                p.id, 
+                p.data_pedido, 
+                p.status, 
+                p.total, 
+                c.nome AS cliente_nome, 
+                c.email AS cliente_email
+            FROM pedidos p
+            JOIN clientes c ON p.cliente_id = c.id
+            ORDER BY p.data_pedido DESC
+        ');
+        $pedidos = $stmtPedidos->fetchAll(PDO::FETCH_ASSOC);
+
+        // 2. Para cada pedido, busca os itens correspondentes
+        $stmtItens = $pdo->prepare('
+            SELECT 
+                pi.quantidade, 
+                pi.preco_unitario,
+                pr.nome AS produto_nome,
+                pr.imagem AS produto_imagem
+            FROM pedido_itens pi
+            JOIN produtos pr ON pi.produto_id = pr.id
+            WHERE pi.pedido_id = :pedido_id
+        ');
+
+        foreach ($pedidos as $key => $pedido) {
+            $stmtItens->execute(['pedido_id' => $pedido['id']]);
+            $pedidos[$key]['itens'] = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        json_response($pedidos, 200);
+    }
+    
     // POST: Grava o pedido e os itens (Transação Atômica)
     if ($method === 'POST') {
         $data = get_request_body_params();
