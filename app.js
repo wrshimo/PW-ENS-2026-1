@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const contactForm = document.getElementById('contact-form');
   const clearCartBtn = document.getElementById('clear-cart-btn');
   const confirmClearBtn = document.getElementById('confirm-clear-btn');
+  const checkoutModal = new bootstrap.Modal(document.getElementById('checkoutModal'));
 
   // =====================================================
   // 3) Bootstrap components
@@ -168,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="fw-bold">${formatPriceBRL(cartTotal())}</span>
         </div>
         <div class="text-muted" style="font-size:0.8rem">Clique no “-” para remover 1 unidade.</div>
+        <button id="go-to-checkout" class="btn btn-primary w-100">Finalizar Compra</button>
       </div>
     `;
   }
@@ -290,6 +292,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
+  // Função para buscar clientes
+  function loadClientes() {
+    fetch('/api/clientes.php')
+      .then(r => r.json())
+      .then(clientes => {
+          const select = document.getElementById('select-cliente');
+          select.innerHTML = '<option value="">Selecione um cliente...</option>' + 
+              clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+      })
+      .catch(() => alert('Erro ao carregar clientes. Verifique se está logado.'));
+  }
+
   // A chamada de carregamento foi movida para a seção 11.
 
   // =====================================================
@@ -352,37 +366,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   confirmClearBtn.addEventListener('click', clearCart);
 
-  // formulário
-  if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const nameInput = document.getElementById('nome');
-      const emailInput = document.getElementById('email');
-      const messageTextarea = document.getElementById('mensagem');
-      const messageDiv = document.getElementById('form-message');
+  // Event Delegation para o botão de checkout
+  document.body.addEventListener('click', (e) => {
+    if (e.target.id === 'go-to-checkout') {
+      if (cartCount() === 0) return alert('Carrinho vazio!');
+      document.getElementById('checkout-total').textContent = formatPriceBRL(cartTotal());
+      loadClientes();
+      checkoutModal.show();
+    }
+  });
 
-      messageDiv.innerHTML = '';
-      messageDiv.classList.remove('alert', 'alert-danger', 'alert-success');
+  // Clique no botão Confirmar
+  document.getElementById('btn-confirmar-pedido').addEventListener('click', () => {
+    const clienteId = document.getElementById('select-cliente').value;
+    if (!clienteId) return alert('Por favor, selecione um cliente.');
 
-      if (
-        nameInput.value.trim() === '' ||
-        emailInput.value.trim() === '' ||
-        messageTextarea.value.trim() === ''
-      ) {
-        messageDiv.textContent = 'Preencha todos os campos!';
-        messageDiv.classList.add('alert', 'alert-danger');
-      } else {
-        messageDiv.textContent = 'Enviado com sucesso!';
-        messageDiv.classList.add('alert', 'alert-success');
-        contactForm.reset();
-      }
+    const payload = {
+        cliente_id: clienteId,
+        total: cartTotal(),
+        items: cart.items
+    };
 
-      setTimeout(() => {
-        messageDiv.innerHTML = '';
-        messageDiv.classList.remove('alert', 'alert-danger', 'alert-success');
-      }, 3000);
-    });
-  }
+    fetch('/api/pedidos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.error) throw new Error(res.error);
+        alert(res.message);
+        clearCart(); // Função existente que limpa LS e atualiza UI
+        checkoutModal.hide();
+    })
+    .catch(err => alert('Falha ao gravar pedido: ' + err.message));
+  });
 
   // =====================================================
   // 9) Promoção do dia (exemplo: switch)

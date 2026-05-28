@@ -70,6 +70,33 @@ render_nav('home');
   </div>
 </div>
 
+<!-- Modal Checkout -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-cart-check"></i> Finalizar Pedido</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Selecione o Cliente:</label>
+          <select id="select-cliente" class="form-select">
+            <option value="">Carregando clientes...</option>
+          </select>
+        </div>
+        <div class="alert alert-info py-2">
+            <strong>Total da Venda:</strong> <span id="checkout-total">R$ 0,00</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button id="btn-confirmar-pedido" class="btn btn-success">Confirmar e Gravar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   // A partir de agora, o front-end busca produtos via HTTP (API REST)
   // A variável foi mantida só para não quebrar o app.js (e para evidenciar a separação)

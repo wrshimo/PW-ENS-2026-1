@@ -1,5 +1,11 @@
 -- Inserção de dados na tabela de produtos
 
+INSERT INTO `clientes` (nome, email, cidade) VALUES 
+('Ana Souza', 'ana@email.com', 'Cuiabá'),
+('Bruno Lima', 'bruno@email.com', 'Várzea Grande'),
+('Carla Dias', 'carla@email.com', 'Rondonópolis'),
+('Daniel Oliveira', 'daniel@email.com', 'Cáceres');
+
 -- Limpa a tabela antes de inserir novos dados (opcional, mas recomendado para testes)
 -- TRUNCATE TABLE `loja`.`produtos`;
 
