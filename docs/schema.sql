@@ -1,9 +1,10 @@
+/*
 CREATE DATABASE loja
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 USE loja;
-
+*/
 CREATE TABLE IF NOT EXISTS `clientes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(100) NOT NULL,
