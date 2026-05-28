@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
 function render_head(string $title): void {
 ?>
 <!DOCTYPE html>
@@ -34,9 +38,6 @@ function render_flash_messages(): void {
 }
 
 function render_nav(string $active = 'home'): void {
-  if (session_status() === PHP_SESSION_NONE) {
-      session_start();
-  }
   $isHome = $active === 'home' ? 'active' : '';
   $isAdmin = $active === 'admin' ? 'active' : '';
 ?>
